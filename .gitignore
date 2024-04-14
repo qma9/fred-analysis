@@ -15,6 +15,6 @@
 **/output/
 
 # Misc
-**/query.pycache
+**/query.py
 server_cmds.txt
 TODO.md
