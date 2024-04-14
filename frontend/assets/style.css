@@ -1,0 +1,67 @@
+/* Style for the whole page */
+body {
+    margin: 0;
+    font-size: 1.6rem;
+    overflow-x: hidden;
+}
+
+/* Class form Rust Book */
+.navy {
+    --bg: hsl(226, 23%, 11%);
+    --fg: #bcbdd0;
+    --sidebar-bg: #282d3f;
+    --sidebar-fg: #c8c9db;
+    --sidebar-non-existant: #505274;
+    --sidebar-active: #2b79a2;
+    --sidebar-spacer: #2d334f;
+    --scrollbar: var(--sidebar-fg);
+    --icons: #737480;
+    --icons-hover: #b7b9cc;
+    --links: #2b79a2;
+    --inline-code-color: #c5c8c6;
+    --theme-popup-bg: #161923;
+    --theme-popup-border: #737480;
+    --theme-hover: #282e40;
+    --quote-bg: hsl(226, 15%, 17%);
+    --quote-border: hsl(226, 15%, 22%);
+    --warning-border: #ff8e00;
+    --table-border-color: hsl(226, 23%, 16%);
+    --table-header-bg: hsl(226, 23%, 31%);
+    --table-alternate-bg: hsl(226, 23%, 14%);
+    --searchbar-border-color: #aaa;
+    --searchbar-bg: #aeaec6;
+    --searchbar-fg: #000;
+    --searchbar-shadow-color: #aaa;
+    --searchresults-header-fg: #5f5f71;
+    --searchresults-border-color: #5c5c68;
+    --searchresults-li-bg: #242430;
+    --search-mark-bg: #a2cff5;
+    --color-scheme: dark;
+}
+
+/* Style for a card component */
+.card {
+    box-shadow: 0 4px 8px 0 rgba(32, 1, 1, 0.2);
+    transition: 0.3s;
+    width: 40%;
+    margin: auto;
+    margin-bottom: 20px;
+    background-color: #1e1248 !important;  /* #433c3c */
+    border-radius: 5px;
+    padding: 20px;
+    align-items: center !important;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+}
+
+.card-content {
+    padding: 15px;
+    text-align: center;
+}
