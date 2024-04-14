@@ -1,0 +1,20 @@
+# Vitural environment
+.venv
+
+# Environment variables
+.env
+
+# Workspace settings
+.vscode
+
+# pycache
+**/__pycache__/
+
+# Data
+**/data/
+**/output/
+
+# Misc
+**/query.pycache
+server_cmds.txt
+TODO.md
