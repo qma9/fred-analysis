@@ -31,9 +31,6 @@ SERIES_IDS = [
     "CBETHUSD",  # ✅ Coinbase Ethereum (USD)
 ]
 
-ACCUMULATING_TARGETS = [
-]
-
 SIMPLE_TARGETS = [
     "USREC",
 ]
@@ -54,4 +51,38 @@ INTERPOLATION_TARGETS = [
     "T5YIE",
     "CBBTCUSD",
     "CBETHUSD",
+]
+
+
+SEMICONDUCTOR_SERIES = [
+    "IPG3344S",
+    "A939RX0Q048SBEA",
+    "SP500",
+    "VIXCLS",
+    "OVXCLS",
+    "WM2NS",
+    "DTWEXAFEGS",
+    "DTB3",
+    "INFECTDISEMVTRACKD",
+    "UNRATE",
+    "T5YIE",
+    "AITINO",
+]
+
+
+CRYPTOCURRENCY_SERIES = [
+    "CBBTCUSD",
+    "CBETHUSD",
+    "A939RX0Q048SBEA",
+    "SP500",
+    "VIXCLS",
+    "OVXCLS",
+    "WM2NS",
+    "RRPONTSYD",
+    "DTWEXAFEGS",
+    "DTB3",
+    "INFECTDISEMVTRACKD",
+    "UNRATE",
+    "T5YIE",
+    "AITINO",
 ]

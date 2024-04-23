@@ -23,8 +23,11 @@ from api.database import (
     populate_series,
     populate_observations,
     create_tables,
+    fetch_observations,
 )
 from api.analysis import (
+    pivot_data,
+    select_series,
     unit_root_test,
     difference_series,
     cointegration_rank,
@@ -40,6 +43,8 @@ from api.config import (
     SERIES_IDS,
     SIMPLE_TARGETS,
     INTERPOLATION_TARGETS,
+    SEMICONDUCTOR_SERIES,
+    CRYPTOCURRENCY_SERIES,
 )
 
 
@@ -74,11 +79,6 @@ async def main() -> None:
     with open("backend/output/observations.json", "w") as f:
         dump(observations_responses, f, cls=DateEncoder)
 
-    # Select accumulating series with lesser than daily frequency
-    # accumulating_targets = select_target_responses(
-    #     observations_responses, ACCUMULATING_TARGETS
-    # )
-
     # Select binary or index series with lesser than daily frequency
     simple_targets = select_target_responses(observations_responses, SIMPLE_TARGETS)
 
@@ -91,12 +91,8 @@ async def main() -> None:
     other_observations = [
         response
         for response in observations_responses
-        if response["series_id"]
-        not in SIMPLE_TARGETS + INTERPOLATION_TARGETS  # + ACCUMULATING_TARGETS
+        if response["series_id"] not in SIMPLE_TARGETS + INTERPOLATION_TARGETS
     ]
-
-    # Transform accumulating series to daily frequency with proportional incrementing
-    # transformed_accumulating_targets = increase_frequency(accumulating_targets)
 
     # Transform binary or index series to daily frequency with backwards filling
     transformed_simple_targets = backwards_fill(simple_targets)
@@ -110,7 +106,6 @@ async def main() -> None:
     transformed_observations = recombine_data(
         other_observations,
         [
-            # transformed_accumulating_targets,
             transformed_simple_targets,
             transformed_interpolation_targets,
         ],
@@ -129,7 +124,64 @@ async def main() -> None:
     # Populate Observations table with observations including untouched and transformed series
     populate_observations(transformed_observations)
 
-    # Analysis
+    # Fetch Observations from database
+    data = fetch_observations()
+
+    ################## Analysis ##################
+    # Pivot data to have dates as index and series as columns
+    df = pivot_data(data)
+
+    # Select groups of series for analyses
+    df_semiconductor = select_series(df, SEMICONDUCTOR_SERIES)
+    df_cryptocurrency = select_series(df, CRYPTOCURRENCY_SERIES)
+
+    # Test for unit root to check if series are stationary
+    semiconductor_p_values_before = unit_root_test(df_semiconductor)
+    cryptocurrency_p_values_before = unit_root_test(df_cryptocurrency)
+
+    # Difference non-stationary series and re-test with adfuller
+    df_semiconductor_differenced, semiconductor_p_values_after = difference_series(
+        df_semiconductor, semiconductor_p_values_before
+    )
+    df_cryptocurrency_differenced, cryptocurrency_p_values_after = difference_series(
+        df_cryptocurrency, cryptocurrency_p_values_before
+    )
+
+    # Get cointegration rank for series
+    semiconductor_rank = cointegration_rank(df_semiconductor_differenced)
+    cryptocurrency_rank = cointegration_rank(df_cryptocurrency_differenced)
+
+    # Get lag order for VECM
+    semiconductor_lag_order = get_lag_order(df_semiconductor_differenced)
+    cryptocurrency_lag_order = get_lag_order(df_semiconductor_differenced)
+
+    # Get VECM models
+    semiconductor_model = vecm_wrapper(
+        df_semiconductor_differenced, semiconductor_lag_order
+    )
+    cryptocurrency_model = vecm_wrapper(
+        df_cryptocurrency_differenced, cryptocurrency_lag_order
+    )
+
+    # Fit VECM models
+    semiconductor_result = semiconductor_model.fit()
+    cryptocurrency_result = cryptocurrency_model.fit()
+
+    # Get predictions from VECM models
+    df_semiconductor_predictions = get_predictions(
+        df_semiconductor_differenced, semiconductor_result, steps=31
+    )
+    df_cryptocurrency_predictions = get_predictions(
+        df_cryptocurrency_differenced, cryptocurrency_result, steps=31
+    )
+
+    # Inverse series differencing to get predictions in original scale
+    df_semiconductor_forecast = inverse_difference_series(
+        df_semiconductor, df_semiconductor_predictions
+    )
+    df_cryptocurrency_forecast = inverse_difference_series(
+        df_cryptocurrency, df_cryptocurrency_predictions
+    )
 
     exit(0)
 
