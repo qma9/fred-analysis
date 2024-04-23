@@ -1,3 +1,4 @@
+from sqlalchemy.engine import Row
 from statsmodels.tsa.vector_ar.vecm import (
     select_coint_rank,
     select_order,
@@ -6,10 +7,25 @@ from statsmodels.tsa.vector_ar.vecm import (
 )
 from statsmodels.tsa.statespace.tools import diff
 from statsmodels.tsa.stattools import adfuller
-from pandas import DataFrame, Series, date_range, concat
+from pandas import DataFrame, Series, date_range, concat, to_datetime
 from pandas.tseries.offsets import Day
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
+
+
+def pivot_data(data: List[Row]) -> DataFrame:
+    """
+    Pivot the DataFrame to have dates as index and series as columns.
+    """
+    df = DataFrame(data)
+    df["date"] = to_datetime(df["date"])
+    df["value"] = df["value"].astype(float)
+
+    return df.pivot(index="date", columns="series_id", values="value")
+
+
+def select_series(df: DataFrame, series_ids: List[str]) -> DataFrame:
+    return df[series_ids].dropna()
 
 
 def unit_root_test(df: DataFrame) -> Dict[str, float]:
@@ -62,7 +78,7 @@ def cointegration_rank(df: DataFrame) -> int:
     return result.rank
 
 
-def get_lag_order(df: DataFrame):
+def get_lag_order(df: DataFrame) -> int:
     """
     Get the lag order for the VECM model.
     """
