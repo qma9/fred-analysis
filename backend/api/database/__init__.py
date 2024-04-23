@@ -6,5 +6,5 @@ from .db_utils import (
     populate_observations,
     create_tables,
     get_db,
-    get_gdp_per_capita,
+    fetch_observations,
 )

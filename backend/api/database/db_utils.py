@@ -1,4 +1,5 @@
 from sqlalchemy.orm import sessionmaker, Session as _Session
+from sqlalchemy.engine import Row
 from sqlalchemy import create_engine
 
 from contextlib import contextmanager
@@ -38,10 +39,14 @@ def create_tables() -> None:
     Base.metadata.create_all(engine)
 
 
-def populate_series(series_data: List[Dict[str, str | int | float]]) -> None:
+def populate_series(
+    series_data: List[Dict[str, str | int | float]], transformed_series: List[str]
+) -> None:
     with get_db() as session:
         for data in series_data:
             series_model = BaseSeries.model_validate(data)
+            if data.get("id") in transformed_series:
+                series_model.is_transformed = True
             series = Series(**series_model.model_dump())
             session.add(series)
         session.commit()
@@ -60,6 +65,15 @@ def populate_observations(observation_data: List[Dict[str, str | int | float]]) 
         for observation in generate_observations(observation_data):
             session.add(observation)
         session.commit()
+
+
+def fetch_observations() -> List[Row]:
+    with get_db() as session:
+        data = session.query(
+            Observations.date, Observations.series_id, Observations.value
+        ).all()
+
+    return data
 
 
 def get_gdp_per_capita() -> None:

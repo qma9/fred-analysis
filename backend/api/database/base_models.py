@@ -22,6 +22,7 @@ class BaseSeries(BaseModel):
     last_updated: datetime
     popularity: int
     notes: Optional[str] = None
+    is_transformed: bool = False
 
 
 class BaseObservations(BaseModel):

@@ -1,5 +1,14 @@
 # models.py
-from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, Date, Boolean
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Float,
+    ForeignKey,
+    Date,
+    Boolean,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import declarative_base
 
@@ -26,6 +35,7 @@ class Series(Base):
     last_updated = Column(DateTime)
     popularity = Column(Integer)
     notes = Column(String, nullable=True)
+    is_transformed = Column(Boolean, default=False)
     observations = relationship("Observations", back_populates="series")
 
     def __repr__(self):
@@ -46,4 +56,3 @@ class Observations(Base):
 
     def __repr__(self):
         return f"<Observations(series_id={self.series_id}, date={self.date}, value={self.value})>"
-    
