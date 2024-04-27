@@ -127,3 +127,10 @@ def inverse_difference_series(df: DataFrame) -> DataFrame:
     Reverse differencing to get original series.
     """
     return df.cumsum()
+
+
+def melt_data(df: DataFrame) -> DataFrame:
+    """
+    Inverse pivoting of dataframe back to original long schema.
+    """
+    return df.reset_index().melt(id_vars=["date", "series_id"])
