@@ -24,6 +24,7 @@ from api.database import (
     populate_observations,
     create_tables,
     fetch_observations,
+    populate_predictions,
 )
 from api.analysis import (
     pivot_data,
@@ -35,6 +36,7 @@ from api.analysis import (
     vecm_wrapper,
     get_predictions,
     inverse_difference_series,
+    melt_data,
 )
 from api.config import (
     BASE_URL,
@@ -182,6 +184,18 @@ async def main() -> None:
     df_cryptocurrency_forecast = inverse_difference_series(
         df_cryptocurrency, df_cryptocurrency_predictions
     )
+
+    # Inverse pivoting of dataframes back to original long schema
+    df_semiconductor_forecast_long = melt_data(df_semiconductor_forecast)
+    df_cryptocurrency_forecast_long = melt_data(df_cryptocurrency_forecast)
+
+    # Insert categorical model column
+    df_semiconductor_forecast_long["model"] = "semiconductor"
+    df_cryptocurrency_forecast_long["model"] = "cryptocurrency"
+
+    # Populate predictions table
+    populate_predictions(df_semiconductor_forecast_long)
+    populate_predictions(df_cryptocurrency_forecast_long)
 
     exit(0)
 
