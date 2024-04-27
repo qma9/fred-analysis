@@ -1,6 +1,7 @@
 # base_models.py
 from pydantic import BaseModel, validator
 from dateutil.parser import parse
+from enum import Enum
 
 from datetime import datetime, date
 from typing import Optional
@@ -31,4 +32,15 @@ class BaseObservations(BaseModel):
     realtime_end: date
     date: date
     value: Optional[float]
-    is_prediction: Optional[bool] = False
+        
+    
+class ModelVariants(str, Enum):
+    semiconductor = "semiconductor"
+    cryptocurrency = "cryptocurrency"
+    
+    
+class BasePredictions(BaseModel):
+    series_id: str
+    model: ModelVariants
+    date: date
+    value: Optional[float]

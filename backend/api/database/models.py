@@ -37,6 +37,7 @@ class Series(Base):
     notes = Column(String, nullable=True)
     is_transformed = Column(Boolean, default=False)
     observations = relationship("Observations", back_populates="series")
+    predictions = relationship("Predictions", back_populates="series")
 
     def __repr__(self):
         return f"<Series(id={self.id}, title={self.title})>"
@@ -50,9 +51,22 @@ class Observations(Base):
     realtime_start = Column(Date)
     realtime_end = Column(Date)
     date = Column(Date)
-    value = Column(Float)
-    is_prediction = Column(Boolean, default=False)
+    value = Column(Float, nullable=True)
     series = relationship("Series", back_populates="observations")
 
     def __repr__(self):
         return f"<Observations(series_id={self.series_id}, date={self.date}, value={self.value})>"
+    
+
+class Predictions(Base):
+    __tablename__ = "predictions"
+    
+    id = Column(Integer, primary_key=True)
+    series_id = Column(String, ForeignKey("series.id"))
+    model = Column(String)
+    date = Column(Date)
+    value = Column(Float)
+    series = relationship("Series", back_populates="predictions")
+    
+    def __repr__(self):
+        return f"<Predictions(series_id={self.series_id}, model={self.model}, date={self.date}, value={self.value})>"

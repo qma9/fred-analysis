@@ -1,6 +1,7 @@
 from sqlalchemy.orm import sessionmaker, Session as _Session
 from sqlalchemy.engine import Row
 from sqlalchemy import create_engine
+from pandas import DataFrame
 
 from contextlib import contextmanager
 from typing import Generator, Dict, List, Union
@@ -15,8 +16,10 @@ from . import (
     Base,
     BaseSeries,
     BaseObservations,
+    BasePredictions,
     Series,
     Observations,
+    Predictions,
 )
 
 # Create the database engine, log SQL statements to console
@@ -74,6 +77,20 @@ def fetch_observations() -> List[Row]:
         ).all()
 
     return data
+
+
+def generate_predictions(df: DataFrame) -> Generator[Predictions, None, None]:
+    for _, row in df.iterrows():
+        observation = row.to_dict()
+        valid_observation = BasePredictions.model_validate(observation)
+        yield Predictions(**valid_observation.model_dump())
+
+
+def populate_predictions(df: DataFrame) -> None:
+    with get_db() as session:
+        for prediction in generate_predictions(df):
+            session.add(prediction)
+        session.commit()
 
 
 def get_gdp_per_capita() -> None:
