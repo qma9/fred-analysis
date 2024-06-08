@@ -32,7 +32,7 @@ Vector-Error Correction Models are used since the time series are co-integrated 
 9) CBOE Crude Oil ETF Volatility Index - OVXCLS
 10) Equity Market Volatility: Infectious Disease Tracker - INFECTDISEMVTRACKD
 
-
+![Frontend Demo](./frontend/assets/frontend.gif)
 
 ## Usage
 
