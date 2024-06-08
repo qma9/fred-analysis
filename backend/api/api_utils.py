@@ -2,13 +2,13 @@ from urllib.parse import urlencode, urlparse, parse_qs
 from requests.exceptions import RequestException
 from aiohttp import ClientSession
 from dateutil.parser import parse
-import pandas as pd
+from pandas import DataFrame, to_datetime
 import numpy as np
 
 from datetime import datetime, date
 from typing import List, Dict
-import asyncio
 from json import JSONEncoder
+import asyncio
 import os
 
 
@@ -68,11 +68,8 @@ async def get_responses(urls: List[str]) -> List[Dict[str, str | int | float]]:
     async with ClientSession() as session:
         tasks = [get_json(session, url) for url in urls]
         await asyncio.sleep(0.05)
-        results = await asyncio.gather(*tasks)  # added
-        for url, response in zip(
-            urls, results
-        ):  # removed as second argument: asyncio.as_completed(tasks)
-            # response = await task
+        results = await asyncio.gather(*tasks)
+        for url, response in zip(urls, results):
             if response is not None:
                 if "seriess" in response:
                     response = response["seriess"][0]
@@ -130,10 +127,10 @@ def increase_frequency(
         filtered_data = [item for item in data if item["series_id"] == series_id]
 
         # Convert the list of dictionaries to a DataFrame
-        df = pd.DataFrame(filtered_data)
+        df = DataFrame(filtered_data)
 
         # Convert 'date' and 'value' columns to datetime and float respectively
-        df["date"] = pd.to_datetime(df["date"])
+        df["date"] = to_datetime(df["date"])
         df["value"] = df["value"].astype(float)
 
         # Set 'date' as index
@@ -187,10 +184,10 @@ def backwards_fill(
         filtered_data = [item for item in data if item["series_id"] == series_id]
 
         # Convert filtered data to a DataFrame
-        df = pd.DataFrame(filtered_data)
+        df = DataFrame(filtered_data)
 
         # Convert 'date' and 'value' columns to datetime and float respectively
-        df["date"] = pd.to_datetime(df["date"])
+        df["date"] = to_datetime(df["date"])
         df["value"] = df["value"].astype(float)
 
         # Set 'date' as index
@@ -223,19 +220,29 @@ def interpolate_data(
         filtered_data = [item for item in data if item["series_id"] == series_id]
 
         # Convert the data to a DataFrame
-        df = pd.DataFrame(filtered_data)
-        df["date"] = pd.to_datetime(df["date"])
+        df = DataFrame(filtered_data)
+        df["date"] = to_datetime(df["date"])
         df["value"] = df["value"].astype(float)
         df.set_index("date", inplace=True)
 
         # Resample the data to fill in missing days
         df_daily = df.resample("D").asfreq()
 
+        # First fill Nans at either end of series
+        # TODO: Not the most preferable way to deal with nans
+        df_daily["value"] = df_daily["value"].bfill(limit_area="outside")
+        df_daily["value"] = df_daily["value"].ffill(limit_area="outside")
+
         # Interpolate the missing values
-        df_daily["value"] = df_daily["value"].interpolate(method=method)
+        # TODO: Find way to extrapolate values to fill nans
+        df_daily["value"] = df_daily["value"].interpolate(
+            method=method, limit=91, limit_direction="both"
+        )
 
         # Backwards fill the remaining nans
-        df_daily.bfill(inplace=True)
+        df_daily[["series_id", "realtime_start", "realtime_end"]] = df_daily[
+            ["series_id", "realtime_start", "realtime_end"]
+        ].bfill()  # TODO: Not the most preferable way to deal with nans
 
         # Convert the series back to a list of dictionaries
         transformed_data = df_daily.reset_index().to_dict("records")
