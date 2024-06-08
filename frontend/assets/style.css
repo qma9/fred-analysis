@@ -1,67 +1,73 @@
+
 /* Style for the whole page */
 body {
-    margin: 0;
     font-size: 1.6rem;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }
 
-/* Class form Rust Book */
-.navy {
-    --bg: hsl(226, 23%, 11%);
-    --fg: #bcbdd0;
-    --sidebar-bg: #282d3f;
-    --sidebar-fg: #c8c9db;
-    --sidebar-non-existant: #505274;
-    --sidebar-active: #2b79a2;
-    --sidebar-spacer: #2d334f;
-    --scrollbar: var(--sidebar-fg);
-    --icons: #737480;
-    --icons-hover: #b7b9cc;
-    --links: #2b79a2;
-    --inline-code-color: #c5c8c6;
-    --theme-popup-bg: #161923;
-    --theme-popup-border: #737480;
-    --theme-hover: #282e40;
-    --quote-bg: hsl(226, 15%, 17%);
-    --quote-border: hsl(226, 15%, 22%);
-    --warning-border: #ff8e00;
-    --table-border-color: hsl(226, 23%, 16%);
-    --table-header-bg: hsl(226, 23%, 31%);
-    --table-alternate-bg: hsl(226, 23%, 14%);
-    --searchbar-border-color: #aaa;
-    --searchbar-bg: #aeaec6;
-    --searchbar-fg: #000;
-    --searchbar-shadow-color: #aaa;
-    --searchresults-header-fg: #5f5f71;
-    --searchresults-border-color: #5c5c68;
-    --searchresults-li-bg: #242430;
-    --search-mark-bg: #a2cff5;
-    --color-scheme: dark;
+
+.button-64 {
+  align-items: center;
+  background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  display: flex;
+  font-family: Phantomsans, sans-serif;
+  font-size: 20px;
+  justify-content: center;
+  line-height: 1em;
+  max-width: 100%;
+  min-width: 140px;
+  padding: 3px;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-/* Style for a card component */
+.button-64:active,
+.button-64:hover {
+  outline: 0;
+}
+
+.button-64 span {
+  background-color: rgb(5, 6, 45);
+  padding: 16px 24px;
+  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  transition: 300ms;
+}
+
+.button-64:hover span {
+  background: none;
+}
+
+@media (min-width: 768px) {
+  .button-64 {
+    font-size: 24px;
+    min-width: 196px;
+  }
+}
+
+
 .card {
-    box-shadow: 0 4px 8px 0 rgba(32, 1, 1, 0.2);
+    /* box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px; */
+    /* box-shadow: 10px 10px 0 rgba(99, 6, 230, 0.295) !important; */
+    height: 70%;
+    width: 95%;
+    padding: 0px;
+    margin: 0px;
+    /* margin-top: 10px; */
+    margin-bottom: 50px;
+    box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
     transition: 0.3s;
-    width: 80%;
-    margin: auto;
-    margin-bottom: 20px;
     background-color: #212946 !important;  /* #433c3c */
-    border-radius: 5px;
-    padding: 20px;
-    align-items: center !important;
-}
-
-.card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
-
-.card img {
-    width: 100%;
-    height: auto;
-}
-
-.card-content {
-    padding: 15px;
-    text-align: center;
+    align-items: center;
+    
 }

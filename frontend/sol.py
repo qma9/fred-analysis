@@ -1,28 +1,32 @@
-from solara import component, Style, Card, Column, DataFrame
+from solara import component, Style, Card, Column, Row, reactive
 from solara.lab import theme
-import pandas as pd
 from pathlib import Path
 
-from frontend.comp import PlotObservations
-from frontend.api_utils import get_observations
+from frontend.comp import (
+    SemiconductorButtonClick,
+    CryptocurrencyButtonClick,
+    PlotFigure,
+    get_empty_figure,
+)
 
 
 @component()
 def Page():
-    # solara.lab.theme.themes.dark.primary = "#1e1248"
+    # Dark theme and style sheet
     theme.dark = True
     Style(Path("frontend/assets/style.css"))
-    # solara.Theme(Path("frontend/assets/theme.js"))
 
-    with Column(
-        align="center",
-        gap="12px",
-    ):
+    # Initialize empty reactive object for plot
+    reactive_object = reactive(get_empty_figure())
+
+    # Main column component on page
+    # Contains row with two buttons and card with plot
+    with Column(align="center", gap="0px"):
+        with Row(gap="10px", margin=10, justify="space-around"):
+            SemiconductorButtonClick(reactive_object)
+            CryptocurrencyButtonClick(reactive_object)
         with Card(
-            title="Card title",
-            subtitle="Card subtitle",
             elevation=10,
-            margin=10,
             classes=["card"],
         ):
-            PlotObservations()
+            PlotFigure(reactive_object)
